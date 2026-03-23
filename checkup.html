@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Health Check-Up App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      margin: 40px;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+    }
+    .container {
+      max-width: 650px;
+      margin: auto;
+      background: #ecf0f1;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .symptoms input[type="checkbox"] {
+      width: auto;
+      margin-right: 10px;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    button {
+      flex: 1;
+      padding: 12px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .clear-btn {
+      background: #c0392b;
+    }
+    .clear-btn:hover {
+      background: #922b21;
+    }
+    .send-btn {
+      background: #27ae60;
+    }
+    .send-btn:hover {
+      background: #1e8449;
+    }
+    #summary {
+      margin-top: 25px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>🩺 Health Check-Up Form</h1>
+  <div class="container">
+    <form id="checkupForm">
+      <!-- Patient Info -->
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" required>
+
+      <label for="gender">Gender:</label>
+      <select id="gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <!-- Occupation -->
+      <label for="occupation">Occupation:</label>
+      <input type="text" id="occupation" placeholder="e.g. Teacher, Engineer">
+
+      <!-- Relatives -->
+      <label for="relatives">Relatives (optional):</label>
+      <input type="text" id="relatives" placeholder="e.g. Brother: Juan, Mother: Maria">
+
+      <!-- Contact -->
+      <label for="contact">Contact Number:</label>
+      <input type="tel" id="contact" placeholder="e.g. +63 912 345 6789" required>
+
+      <!-- Address -->
+      <label for="address">Home Address:</label>
+      <input type="text" id="address" placeholder="e.g. 123 Main St, Tuguegarao" required>
+
+      <!-- Symptoms -->
+      <label>Symptoms (select any):</label>
+      <div class="symptoms">
+        <input type="checkbox" value="Fever"> Fever
+        <input type="checkbox" value="Cough"> Cough
+        <input type="checkbox" value="Headache"> Headache
+        <input type="checkbox" value="Fatigue"> Fatigue
+        <input type="checkbox" value="Shortness of Breath"> Shortness of Breath
+        <input type="checkbox" id="otherSymptomCheckbox" value="Other"> Other
+        <input type="text" id="otherSymptomText" placeholder="Please specify..." style="display:none;">
+      </div>
+
+      <!-- Medical History -->
+      <label for="history">Medical History:</label>
+      <input type="text" id="history" placeholder="e.g. Diabetes, Hypertension">
+
+      <!-- Appointment Date & Time -->
+      <label for="date">Preferred Check-Up Date:</label>
+      <input type="date" id="date" required>
+
+      <label for="time">Preferred Time:</label>
+      <input type="time" id="time" required>
+
+      <!-- Feedback -->
+      <label for="feedback">Suggestion / Feedback:</label>
+      <textarea id="feedback" rows="4" placeholder="Write your feedback here..."></textarea>
+
+      <div class="buttons">
+        <button type="button" onclick="generateSummary()">Check Up</button>
+        <button type="button" class="clear-btn" onclick="clearForm()">Clear</button>
+        <button type="button" class="send-btn" onclick="sendForm()">Finish / Send</button>
+      </div>
+    </form>
+
+    <div id="summary"></div>
+  </div>
+
+  <script>
+    // Show/hide "Other" text field
+    document.getElementById("otherSymptomCheckbox").addEventListener("change", function() {
+      let otherText = document.getElementById("otherSymptomText");
+      if (this.checked) {
+        otherText.style.display = "inline-block";
+      } else {
+        otherText.style.display = "none";
+        otherText.value = "";
+      }
+    });
+
+    function generateSummary() {
+      let name = document.getElementById("name").value;
+      let age = document.getElementById("age").value;
+      let gender = document.getElementById("gender").value;
+      let occupation = document.getElementById("occupation").value;
+      let relatives = document.getElementById("relatives").value;
+      let contact = document.getElementById("contact").value;
+      let address = document.getElementById("address").value;
+      let history = document.getElementById("history").value;
+      let date = document.getElementById("date").value;
+      let time = document.getElementById("time").value;
+      let feedback = document.getElementById("feedback").value;
+
+      let symptoms = document.querySelectorAll('.symptoms input[type="checkbox"]:checked');
+      let symptomList = [];
+      symptoms.forEach(s => {
+        if (s.value === "Other") {
+          let otherText = document.getElementById("otherSymptomText").value;
+          if (otherText.trim() !== "") {
+            symptomList.push(otherText);
+          } else {
+            symptomList.push("Other (unspecified)");
+          }
+        } else {
+          symptomList.push(s.value);
+        }
+      });
+
+      document.getElementById("summary").innerHTML = `
+        <h3>📋 Check-Up Summary</h3>
+        Name: ${name}<br>
+        Age: ${age}<br>
+        Gender: ${gender}<br>
+        Occupation: ${occupation || "Not provided"}<br>
+        Relatives: ${relatives || "Not provided"}<br>
+        Contact Number: ${contact}<br>
+        Address: ${address}<br>
+        Medical History: ${history || "None"}<br>
+        Symptoms: ${symptomList.length > 0 ? symptomList.join(", ") : "None"}<br>
+        Preferred Date: ${date}<br>
+        Preferred Time: ${time}<br>
+        Feedback: ${feedback || "No feedback provided"}<br><br>
+        ⏰ Reminder: Your check-up is scheduled for ${date} at ${time}.<br><br>
+        ⚠️ This is only a demo. Please consult a healthcare professional for real medical advice.
+      `;
+    }
+
+    function clearForm() {
+      document.getElementById("checkupForm").reset();
+      document.getElementById("summary").innerHTML = "";
+      document.getElementById("otherSymptomText").style.display = "none";
+    }
+
+    function sendForm() {
+      alert("✅ Your check-up form has been submitted. Thank you!");
+      clearForm();
+    }
+  </script>
+</body>
+</html>
